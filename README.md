@@ -75,6 +75,7 @@ try {
 
 # 4. Sockets
 
+## Exercise 1
 In this section, a simple client-server application was implemented using Java sockets. The server listens for incoming connections on a specific port, receives a number from the client, calculates its square, and sends the result back to the client.
 
 **Server:**
@@ -106,10 +107,60 @@ The client connects to the server, sends a number, and prints the response (the 
 try (Socket socket = new Socket("localhost", 12345);
    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
    PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-  out.println("7"); // Send a number
+  out.println("7"); 
   String response = in.readLine();
   System.out.println("Server response: " + response);
 }
 ```
 
 This demonstrates basic socket communication in Java, where the server performs a calculation based on client input and returns the result.
+
+## Exercise 2
+
+This exercise extends the socket server to support trigonometric operations. The server starts by calculating the cosine of any number it receives. The client can send special messages (e.g., `fun:sin`, `fun:cos`, `fun:tan`) to change the operation to sine, cosine, or tangent, respectively. After changing the operation, any number sent by the client will be processed using the selected function.
+
+**Server:**
+
+The server maintains the current function and updates it when receiving a message starting with `fun:`. Otherwise, it parses the input as a number and applies the current function:
+
+```java
+String currentFun = "cos";
+while ((line = in.readLine()) != null) {
+  if (line.startsWith("fun:")) {
+    String fun = line.substring(4).trim();
+    if (fun.equals("sin") || fun.equals("cos") || fun.equals("tan")) {
+      currentFun = fun;
+      out.println("Function changed to " + currentFun);
+    } else {
+      out.println("Unknown function: " + fun);
+    }
+  } else {
+    double num = Double.parseDouble(line.trim());
+    double result;
+    switch (currentFun) {
+      case "sin": result = Math.sin(num); break;
+      case "tan": result = Math.tan(num); break;
+      case "cos":
+      default: result = Math.cos(num); break;
+    }
+    out.println(result);
+  }
+}
+```
+
+**Client:**
+
+The client allows the user to enter either a number or a function change command. It sends the input to the server and prints the response:
+
+```java
+while (true) {
+  System.out.print("> ");
+  String input = scanner.nextLine();
+  out.println(input);
+  String response = in.readLine();
+  System.out.println("Respuesta: " + response);
+}
+```
+
+For example, if the client sends `0`, the server responds with `1` (cos(0)). If the client sends `fun:sin` and then `0`, the server responds with `0` (sin(0)).
+
