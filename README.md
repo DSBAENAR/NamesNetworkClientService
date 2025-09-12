@@ -164,3 +164,33 @@ while (true) {
 
 For example, if the client sends `0`, the server responds with `1` (cos(0)). If the client sends `fun:sin` and then `0`, the server responds with `0` (sin(0)).
 
+
+## Exercise 3
+
+This exercise implements a simple HTTP server in Java that serves static files (HTML, images, etc.) from the `Sockets/WebSocket` directory. The server listens on port 8080 and responds to browser requests for any file in that directory. If the requested file exists, it is returned with the correct MIME type; otherwise, a 404 error page is shown.
+
+**Key code fragment:**
+
+```java
+File file = new File("Sockets/WebSocket", path);
+if (file.exists() && file.isFile()) {
+  String contentType = getContentType(path);
+  out.write(("HTTP/1.1 200 OK\r\n").getBytes());
+  out.write(("Content-Type: " + contentType + "\r\n").getBytes());
+  out.write("\r\n".getBytes());
+  try (FileInputStream fis = new FileInputStream(file)) {
+    byte[] buffer = new byte[4096];
+    int bytesRead;
+    while ((bytesRead = fis.read(buffer)) != -1) {
+      out.write(buffer, 0, bytesRead);
+    }
+  }
+} else {
+  String notFound = "<html><body><h1>404 Not Found</h1></body></html>";
+  out.write(("HTTP/1.1 404 Not Found\r\n").getBytes());
+  out.write("Content-Type: text/html\r\n\r\n".getBytes());
+  out.write(notFound.getBytes());
+}
+```
+
+To test, place your files (e.g., `index.html`, `Horario.png`) in the `Sockets/WebSocket` directory and access them from your browser at `http://localhost:8080/filename`.
