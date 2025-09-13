@@ -1,6 +1,6 @@
 import java.net.URL;
 import java.net.URI;
-public class Main {
+public class ProtocolHttp {
 	public static void main(String[] args) {
 		try {
 			URI uri = new URI("https://doodles.google/doodle/nba-playoffs-2025-am");
