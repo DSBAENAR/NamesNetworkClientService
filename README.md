@@ -1,3 +1,49 @@
+## Exercise 5
+
+This exercise implements a simple chat application using Java RMI. Each instance can act as both server and client. The user specifies a port to publish their chat object, and can connect to another instance by providing its IP and port.
+
+**Interface:**
+
+```java
+public interface ChatInterface extends Remote {
+  void sendMessage(String message) throws RemoteException;
+}
+```
+
+**Server:**
+
+```java
+Scanner scanner = new Scanner(System.in);
+System.out.print("Enter port to publish chat object: ");
+int port = Integer.parseInt(scanner.nextLine());
+ChatServer obj = new ChatServer();
+ChatInterface stub = (ChatInterface) UnicastRemoteObject.exportObject(obj, 0);
+Registry registry = LocateRegistry.createRegistry(port);
+registry.rebind("ChatService", stub);
+System.out.println("Chat server published on port " + port);
+```
+
+**Client:**
+
+```java
+Scanner scanner = new Scanner(System.in);
+System.out.print("Enter server IP: ");
+String ip = scanner.nextLine();
+System.out.print("Enter server port: ");
+int port = Integer.parseInt(scanner.nextLine());
+Registry registry = LocateRegistry.getRegistry(ip, port);
+ChatInterface chat = (ChatInterface) registry.lookup("ChatService");
+while (true) {
+  System.out.print("You: ");
+  String msg = scanner.nextLine();
+  if (msg.equalsIgnoreCase("exit")) break;
+  chat.sendMessage(msg);
+}
+```
+
+To test:
+- Run the server (`ChatServer.java`) and specify a port.
+- Run the client (`ChatClient.java`), enter the server's IP and port, and start chatting interactively.
 # 3. Working with URLs
 
 ## Exercise 1
