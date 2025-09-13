@@ -193,4 +193,50 @@ if (file.exists() && file.isFile()) {
 }
 ```
 
+
 To test, place your files (e.g., `index.html`, `Horario.png`) in the `Sockets/WebSocket` directory and access them from your browser at `http://localhost:8080/filename`.
+
+## Exercise 4
+
+This exercise implements a UDP-based time server and client. The server responds with the current time to any UDP request. The client requests the time every 5 seconds and displays the last received value. If the server is down, the client keeps showing the last received time and updates when the server is back.
+
+**Server:**
+
+```java
+DatagramSocket socket = new DatagramSocket(PORT);
+while (true) {
+  DatagramPacket packet = new DatagramPacket(buf, buf.length);
+  socket.receive(packet);
+  String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+  byte[] timeBytes = time.getBytes();
+  DatagramPacket response = new DatagramPacket(
+    timeBytes, timeBytes.length, packet.getAddress(), packet.getPort());
+  socket.send(response);
+}
+```
+
+**Client:**
+
+```java
+DatagramSocket socket = new DatagramSocket();
+String lastTime = "No time received yet";
+while (true) {
+  try {
+    DatagramPacket request = new DatagramPacket(new byte[1], 1, InetAddress.getByName(SERVER), PORT);
+    socket.send(request);
+    socket.setSoTimeout(2000);
+    DatagramPacket response = new DatagramPacket(buf, buf.length);
+    socket.receive(response);
+    lastTime = new String(response.getData(), 0, response.getLength());
+  } catch (Exception e) {
+    // Timeout or server down: keep lastTime
+  }
+  System.out.println("Current time: " + lastTime);
+  Thread.sleep(5000);
+}
+```
+
+To test:
+- Run the server (`TimeServer.java`).
+- Run the client (`TimeClient.java`).
+- The client will print the time every 5 seconds. If the server is stopped, the client keeps showing the last time and updates when the server is restarted.
