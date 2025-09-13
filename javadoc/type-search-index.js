@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"Sockets","l":"Client"},{"p":"Sockets.funSockets","l":"funClient"},{"p":"Sockets.funSockets","l":"funServer"},{"p":"Sockets.WebSocket","l":"HttpServer"},{"p":"Sockets","l":"Server"}];updateSearchResults();
